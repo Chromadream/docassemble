@@ -464,6 +464,7 @@ def install_package(package, start_time=None):
     from docassemble.webapp.daredis import r
     from docassemble.webapp.files import SavedFile
     PACKAGE_DIRECTORY = daconfig.get('packages', '/usr/share/docassemble/local' + str(sys.version_info.major) + '.' + str(sys.version_info.minor))
+    ADDITIONAL_REGISTRY = daconfig.get('additional_registry', None)
     logfilecontents = ''
     pip_log = tempfile.NamedTemporaryFile()
     temp_dir = tempfile.mkdtemp()
@@ -516,6 +517,8 @@ def install_package(package, start_time=None):
         commands = ['pip', 'install']
         if disable_pip_cache:
             commands.append('--no-cache-dir')
+        if ADDITIONAL_REGISTRY is not None:
+            commands.extend(['--extra-index-url', ADDITIONAL_REGISTRY])
         commands.extend(['--quiet', '--prefix=' + PACKAGE_DIRECTORY, '--src=' + temp_dir, '--upgrade', '--log-file=' + pip_log.name, package.name + limit])
     else:
         sys.stderr.write("Wrong package type after " + str(time.time() - start_time) + " seconds\n")
